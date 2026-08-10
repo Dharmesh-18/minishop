@@ -7,6 +7,8 @@ import com.dharmesh.minishop.product.dto.ProductResponseDTO;
 import com.dharmesh.minishop.product.entity.Product;
 import com.dharmesh.minishop.product.mapper.ProductMapper;
 import com.dharmesh.minishop.product.repository.ProductRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +34,7 @@ public class ProductService {
         return productMapper.toDto(savedProduct);
     }
 
+    @Cacheable(value = "products", key = "#id")
     @Transactional(readOnly = true)
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
@@ -61,6 +64,13 @@ public class ProductService {
                 .totalPages(productPage.getTotalPages())
                 .last(productPage.isLast())
                 .build();
+    }
+
+    @CacheEvict(value = "products", key = "#id")
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No Product found with id: " + id));
+        productRepository.delete(product);
     }
 
 

@@ -1,6 +1,13 @@
 spring:
   application:
     name: minishop-service
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
   datasource:
     url: jdbc:postgresql://localhost:5432/minishop
     username: dharmesh09
@@ -16,6 +23,21 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+resilience4j:
+  ratelimiter:
+    instances:
+      productApiRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0ms
+  circuitbreaker:
+    instances:
+      productServiceCB:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000ms
+        permittedNumberOfCallsInHalfOpenState: 3
 
 
 server:
