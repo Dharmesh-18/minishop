@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 @Tag(name = "Product Management", description = "Endpoints for managing products catalog")
-@RateLimiter(name = "productApiRateLimiter", fallbackMethod = "globalRateLimiterFallback")
+@RateLimiter(name = "productApiRateLimiter")
 public class ProductController {
 
     private final ProductService productService;
