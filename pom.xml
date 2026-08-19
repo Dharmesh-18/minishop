@@ -160,6 +160,12 @@
 			<artifactId>resilience4j-spring-boot3</artifactId>
 			<version>2.2.0</version>
 		</dependency>
+
+		<!-- Spring for Apache Kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
