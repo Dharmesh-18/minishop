@@ -18,7 +18,7 @@ jobs:
 
       # 2. Setup Java 21 JDK
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -30,7 +30,7 @@ jobs:
 
       # 4. Build with Maven and Run All Tests (Including Testcontainers)
       - name: Build with Maven & Run Tests
-        run: ./mvnw clean verify -B
+        run: ./mvnw clean verify -B -e
 
   docker-build:
     name: Build Docker Image
@@ -48,7 +48,7 @@ jobs:
 
       # 3. Build Docker Image (Without Pushing to Registry)
       - name: Build Docker Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
