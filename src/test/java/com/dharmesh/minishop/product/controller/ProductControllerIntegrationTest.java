@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,6 +43,10 @@ public class ProductControllerIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
+        registry.add("spring.cache.type", () -> "none");
+        registry.add("spring.kafka.listener.auto-startup", () -> "false");
+        registry.add("spring.kafka.admin.auto-create", () -> "false");
     }
 
     @Autowired
@@ -51,6 +57,7 @@ public class ProductControllerIntegrationTest {
 
     @Test
     @DisplayName("End-to-End Test: Create a product and retrieve it by ID")
+    @WithMockUser(username = "admin", roles = {"ADMIN", "USER"})
     public void createAndGetProduct_EndToEnd() throws Exception {
         ProductRequestDTO requestDTO = new ProductRequestDTO();
         requestDTO.setName("Dockerized Phone");
