@@ -15,10 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -71,6 +73,21 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No Product found with id: " + id));
         productRepository.delete(product);
+    }
+
+    @Transactional
+    @CacheEvict(value = "products", key = "#productId")
+    public void reduceStock(Long productId, Integer quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+
+        if (product.getStockQuantity() < quantity) {
+            throw new IllegalArgumentException("Insufficient stock to deduct for product id: " + productId);
+        }
+
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        productRepository.save(product);
+        log.info("Stock reduced by {} for productId: {}. New Stock: {}", quantity, productId, product.getStockQuantity());
     }
 
 
